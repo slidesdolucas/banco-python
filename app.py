@@ -3,10 +3,12 @@ import sqlite3
 
 app = Flask(__name__)
 
+# Página inicial
 @app.route("/")
 def index():
     return render_template("cadastro.html")
 
+# Recebe o formulário
 @app.route("/cadastrar", methods=["POST"])
 def cadastrar():
     nome = request.form["nome"]
@@ -16,6 +18,17 @@ def cadastrar():
 
     conn = sqlite3.connect("usuarios.db")
     cursor = conn.cursor()
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS usuarios (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            nome TEXT,
+            email TEXT,
+            cpf TEXT,
+            telefone TEXT
+        )
+    """)
+
     cursor.execute("""
         INSERT INTO usuarios (nome, email, cpf, telefone)
         VALUES (?, ?, ?, ?)
@@ -24,6 +37,7 @@ def cadastrar():
     conn.commit()
     conn.close()
 
-    return redirect("/")
+    return "Cadastro realizado com sucesso!"
+
 if __name__ == "__main__":
-    app = Flask(__name__)
+    app.run(host="0.0.0.0", p
